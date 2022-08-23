@@ -1,64 +1,54 @@
 package com.example.ru.badtiev.controller;
 
-import com.example.ru.badtiev.model.User;
+import com.example.ru.badtiev.service.RoleService;
 import com.example.ru.badtiev.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.List;
+import java.security.Principal;
 
 @Controller
+@RequestMapping("/user")
 public class UserController {
     private final UserService userService;
+    private final RoleService roleService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, RoleService roleService) {
         this.userService = userService;
+        this.roleService = roleService;
     }
 
-    @GetMapping("/users")
-    public String findAll(Model model){
-        List<User> users = userService.findAll();
-        model.addAttribute("users", users);
-        return "user-list";
+    /**
+     * Информаци о зарегистрированном пользователе.
+     * @param principal
+     * @param model
+     * @return
+     */
+    @GetMapping()
+    public String pageUser(Principal principal, Model model) {
+        model.addAttribute("user", userService.findByEmail(principal.getName()));
+
+        return "/user";
     }
 
-    @GetMapping("/user-create")
-    public String createUserForm(User user,BindingResult bindingResult){
-
-        return "user-create";
+    /**
+     * Информация о пользователе по id.
+     * @param model
+     * @param id
+     * @return
+     */
+    @GetMapping("/{id}")
+    public String pageUser(Model model, @PathVariable("id") Long id) {
+        model.addAttribute("roles", roleService.listRoles());
+        model.addAttribute("user", userService.findById(id));
+        return "/user";
     }
 
-    @PostMapping("/user-create")
-    public String createUser(User user, BindingResult bindingResult){
-        if (bindingResult.hasErrors()) { return "user-create"; }
-        else userService.saveUser(user);
-        return "redirect:/users";
-    }
 
-    @GetMapping("user-delete/{id}")
-    public String deleteUser(@PathVariable("id") Long id){
-        userService.deleteById(id);
-        return "redirect:/users";
-    }
-
-    @GetMapping("/user-update/{id}")
-    public String updateUserForm(@PathVariable("id") Long id, Model model){
-        User user = userService.findById(id);
-        model.addAttribute("user", user);
-
-        return "user-update";
-    }
-
-    @PostMapping("/user-update")
-    public String updateUser(User user,BindingResult bindingResult){
-        if (bindingResult.hasErrors()) { return "/user-update"; }
-        else userService.saveUser(user);
-        return "redirect:/users";
-    }
 }
+
