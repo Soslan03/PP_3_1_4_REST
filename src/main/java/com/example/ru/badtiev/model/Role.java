@@ -19,7 +19,7 @@ public class Role implements GrantedAuthority {
     @Column
     private String authority;
 
-    @Transient
+
     @ManyToMany(mappedBy = "roles") //Если ассоциация двунаправленная, одна сторона должна
     // быть владельцем, а другая - обратным концом (т. Е. Она будет
     // проигнорирована при обновлении значений взаимосвязи в таблице ассоциаций):

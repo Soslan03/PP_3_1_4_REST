@@ -8,6 +8,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.validator.constraints.UniqueElements;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -56,10 +57,12 @@ public class User implements UserDetails {
     @Column(name = "password", nullable = false, length = 64)
     private String password;
 
-    @Fetch(FetchMode.JOIN)
-    @ManyToMany(cascade = {
-            CascadeType.PERSIST,
-            CascadeType.MERGE})
+//    @Fetch(FetchMode.SUBSELECT)
+//    @ManyToMany(cascade = {
+//            CascadeType.PERSIST,
+//            CascadeType.MERGE})
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST,CascadeType.MERGE})
+    //@Fetch(value = FetchMode.SUBSELECT)
     @JoinTable(name = "users_role",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
@@ -136,10 +139,9 @@ public class User implements UserDetails {
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() { //Предоставленные Полномочия
+    public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles;
     }
-
 
     @Override
     public boolean isAccountNonExpired() { //срок Действия Учетной Записи Не Истек
