@@ -49,4 +49,12 @@ public class UserService implements UserDetailsService {
     public void deleteById(Long id){
         userRepository.deleteById(id);
     }
+//    @Transactional
+//    public void updateUser(User user) {
+//        User userFromDb = userRepository.findById(user.getId()).orElse(null);
+//        if (!userFromDb.getPassword().equals(user.getPassword())) {
+//            user.setPassword(encoder.encode(user.getPassword()));
+//        }
+//        userRepository.save(user);
+//    }
 }

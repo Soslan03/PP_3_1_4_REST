@@ -5,29 +5,69 @@
     <meta charset="UTF-8">
 
     <title> Index PAGE!</title>
-    <link th:href="@{/css/styles.css}" rel="stylesheet">
-</head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"
+          integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <style>
+        .navbar {
+            color: white;
+        }
+    </style>
 
 
 <body>
-<div class="header-page">
-    <h1>Index PAGE! </h1>
-</div>
-<div class="content-page">
-    <div class="block-list-left">
-        <div class="block-list-left-menu-buttom">
-            <a th:href="@{/user/}">User page</a>
+<!--  ГЛАВНАЯ НАВИГАЦИОННАЯ ПАНЕЛЬ    -->
+
+<nav class="navbar navbar-dark bg-dark">
+    <div class="container-fluid">
+        <div>
+
         </div>
-        <div class="block-list-left-menu-buttom">
-            <a th:href="@{/admin/}">Admin page</a>
+        <form th:action="@{/login}" method="post">
+            <button type="submit" class="btn btn-dark">Login</button>
+        </form>
+    </div>
+</nav>
+<!--sec:authorize="hasRole('ADMIN')"-->
+<div class="container-fluid bg-light">
+
+    <div class="row">
+        <div class="col-2 bg-white pt-3 min-vh-100 px-0">
+            <div class="container-fluid px-0">
+                <ul class="nav flex-column nav-pills ">
+                    <div>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{'/admin/'}">Admin</a>
+                        </li>
+                    </div>
+
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="/user">User</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-10">
+
+            <br>
+            <h1>Start page</h1>
+            <br>
+            <div class="card">
+                <div class="card-block">
+
+                    <div class="col border bg-light">
+                        <h4 style="padding: 10px 10px 10px 15px">Please Login</h4>
+                    </div>
+                    <div class="container-fluid border bg-white py-3 px-4">
+                        <form th:action="@{/login}" method="post">
+                            <button type="submit" class="btn btn-dark">Login</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="block-content">
-        <p>Welcome to Start page!</p>
-
-        <p><a th:href="@{/login}">Вход</a></p>
-    </div>
-
+    <br>
+    <br>
 </div>
 </body>
-</html>
