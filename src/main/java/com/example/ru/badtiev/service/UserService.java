@@ -2,59 +2,61 @@ package com.example.ru.badtiev.service;
 
 import com.example.ru.badtiev.model.User;
 import com.example.ru.badtiev.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class UserService implements UserDetailsService {
+
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+    private final PasswordEncoder bCryptPasswordEncoder;
 
-    @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, @Lazy PasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
-    }
-    public User findByEmail(String email){
-        return userRepository.findByEmail(email);
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = findByEmail(username);
-        if (user == null) {
-            throw new UsernameNotFoundException(String.format("User '%s' not found", username));
-        }
-        return new org.springframework.security.core.userdetails.User(user.getUsername(),user.getPassword(),user.getAuthorities());
-    }
-    public User findById(Long id){
+    public User findById(Long id) {
         return userRepository.findById(id).orElse(null);
     }
 
-    public List<User> findAll(){
+    public List<User> findAll() {
         return userRepository.findAll();
     }
+
     @Transactional
-    public User saveUser(User user){
-        user.setPassword(encoder.encode(user.getPassword()));
-        return userRepository.save(user);
+    public void saveUser(User user) {
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        userRepository.saveAndFlush(user);
     }
+
     @Transactional
-    public void deleteById(Long id){
+    public void updateUser(User user) {
+        if (!user.getPassword().equals(Objects.requireNonNull(userRepository.findById(user.getId()).orElse(null)).getPassword())){
+            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        }else {
+            user.setPassword(Objects.requireNonNull(userRepository.findById(user.getId()).orElse(null)).getPassword());
+        }
+
+        userRepository.saveAndFlush(user);
+    }
+
+    @Transactional
+    public void deleteById(Long id) {
         userRepository.deleteById(id);
     }
-//    @Transactional
-//    public void updateUser(User user) {
-//        User userFromDb = userRepository.findById(user.getId()).orElse(null);
-//        if (!userFromDb.getPassword().equals(user.getPassword())) {
-//            user.setPassword(encoder.encode(user.getPassword()));
-//        }
-//        userRepository.save(user);
-//    }
+
+
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByUsername(username);
+    }
+
 }

@@ -1,71 +1,70 @@
 package com.example.ru.badtiev.model;
 
-import org.hibernate.annotations.NaturalId;
+import org.hibernate.Hibernate;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
 @Entity
 @Table(name = "roles")
 public class Role implements GrantedAuthority {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @NaturalId(mutable = true)
     @Column
-    private String authority;
+    private Long id;
+    @Column
+    private String name;
+    @ManyToMany(mappedBy = "roles")
+    private Set<User> users;
 
+    public Role() { }
 
-    @ManyToMany(mappedBy = "roles") //Если ассоциация двунаправленная, одна сторона должна
-    // быть владельцем, а другая - обратным концом (т. Е. Она будет
-    // проигнорирована при обновлении значений взаимосвязи в таблице ассоциаций):
-    // Итак, сторона, имеющая mappedBy атрибут, является обратной стороной. Сторона,
-    // у которой нет mappedBy атрибута, является владельцем.
-    private Set<User> user = new HashSet<>();
-
-    public Role() {
+    public Role(String name) {
+        this.name = name;
     }
 
-    public Role(String authority) {
-        this.authority = authority;
+    @Override
+    public String getAuthority() {
+        return name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Role role = (Role) o;
+        return id != null && Objects.equals(id, role.id);
     }
 
     public Long getId() {
         return id;
     }
 
-    public Set<User> getUser() {
-        return user;
+    public String getName() {
+        return name;
     }
 
-    public void setAuthority(String authority) {
-        this.authority = authority;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    @Override
-    public String getAuthority() { //получить Полномочия
-        return authority;
-    }
-
-    @Override
-    public String toString() {
-        return authority;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Role role = (Role) o;
-        return Objects.equals(authority, role.authority);
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(authority);
+        return getClass().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Role{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 }

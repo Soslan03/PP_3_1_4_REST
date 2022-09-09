@@ -2,15 +2,16 @@ package com.example.ru.badtiev.service;
 
 import com.example.ru.badtiev.model.Role;
 
-import java.util.List;
 import java.util.Set;
 
 public interface RoleService {
-    void addRole(Role role);
 
-    List<Role> listRoles();
+    Set<Role> findAll();
 
-    Role getRoleByID(Long id);
+    Role findByName(String name);
 
-    Set<Role> findRolesByName(String roleName);
+    void save(Role role);
+
+    Role findById(Long id);
+
 }
