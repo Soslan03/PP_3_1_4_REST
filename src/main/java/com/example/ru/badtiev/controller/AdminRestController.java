@@ -4,6 +4,7 @@ import com.example.ru.badtiev.model.Role;
 import com.example.ru.badtiev.model.User;
 import com.example.ru.badtiev.service.RoleService;
 import com.example.ru.badtiev.service.UserService;
+import com.example.ru.badtiev.service.UserServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -19,7 +20,7 @@ public class AdminRestController {
     private final UserService userService;
     private final RoleService roleService;
 
-    public AdminRestController(UserService userService, RoleService roleService) {
+    public AdminRestController(UserServiceImpl userService, RoleService roleService) {
         this.userService = userService;
         this.roleService = roleService;
     }
